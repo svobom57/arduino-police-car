@@ -4,6 +4,10 @@
 #define ECHO_PIN 12
 #define BLUE_LED 11
 #define RED_LED 10
+
+const long servoInterval = 200;
+long previousServoTime = 0;
+
 //Setting up servo
 Servo servo;
 int servoPosition = 0;
@@ -21,15 +25,43 @@ void setup() {
 
 void loop() {
   
-  for (servoPosition = 0; servoPosition <= 180; servoPosition += 5) { // moving with servo 
-    servo.write(servoPosition); // Moving with servo
-    distance = measureDistance();
-    signalizeDistance();
-    delay(500);  
-  }
- 
+//  for (servoPosition = 0; servoPosition <= 180; servoPosition += 20) { // moving with servo 
+//    servo.write(servoPosition); // Moving with servo
+//    distance = measureDistance();
+//    signalizeDistance();
+//    delay(500);  
+//  }
+  startMultiTasking();
 }
 
+void startMultiTasking() {
+  unsigned long currentTime = millis();
+  double maxMeasuredDistance = 0;
+  int desiredPosition = servoPosition;
+  //Move with servo
+  if (currentTime - previousServoTime >= servoInterval) {
+      previousServoTime = currentTime;
+      moveWithServo(); 
+      distance = measureDistance(); 
+      if (distance > maxMeasuredDistance) {
+        maxMeasuredDistance = distance;
+        desiredPosition = servoPosition;
+      }
+      signalizeDistance();
+  }
+}
+
+
+void moveWithServo() {
+  if (servoPosition > 180) {
+    servoPosition = 0;
+  }
+  servo.write(servoPosition); 
+  if (servoPosition == 0) {
+    delay(600);
+  }
+  servoPosition += 20;
+}
 
 void signalizeDistance() {
      if (distance < 20) {  // This is where the BLUE_LED On/Off happens
