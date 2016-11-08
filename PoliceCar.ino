@@ -7,6 +7,9 @@
 
 const long servoInterval = 200;
 long previousServoTime = 0;
+bool fullyRotated = false;
+double maxMeasuredDistance = 0;
+int desiredPosition = 0;
 
 //Setting up servo
 Servo servo;
@@ -21,23 +24,15 @@ void setup() {
   pinMode(BLUE_LED, OUTPUT);
   pinMode(RED_LED, OUTPUT); 
   servo.attach(9); // Attaching servo to 9 pin
+  Serial.begin(9600);
 }
 
 void loop() {
-  
-//  for (servoPosition = 0; servoPosition <= 180; servoPosition += 20) { // moving with servo 
-//    servo.write(servoPosition); // Moving with servo
-//    distance = measureDistance();
-//    signalizeDistance();
-//    delay(500);  
-//  }
   startMultiTasking();
 }
 
 void startMultiTasking() {
   unsigned long currentTime = millis();
-  double maxMeasuredDistance = 0;
-  int desiredPosition = servoPosition;
   //Move with servo
   if (currentTime - previousServoTime >= servoInterval) {
       previousServoTime = currentTime;
@@ -49,11 +44,22 @@ void startMultiTasking() {
       }
       signalizeDistance();
   }
+  if (fullyRotated) {
+      Serial.println("Moving...");
+      Serial.println("Max Meaured Distance: ");
+      Serial.println(maxMeasuredDistance);
+      Serial.println("desiredPosition: ");
+      Serial.print(desiredPosition);
+      fullyRotated = false;
+      maxMeasuredDistance = 0;
+      desiredPosition = 0;
+  }
 }
 
 
 void moveWithServo() {
   if (servoPosition > 180) {
+    fullyRotated = true;
     servoPosition = 0;
   }
   servo.write(servoPosition); 
@@ -71,12 +77,8 @@ void signalizeDistance() {
       digitalWrite(BLUE_LED,LOW);
       digitalWrite(RED_LED,HIGH);
     }
-    if (distance >= 200 || distance <= 0){
-      Serial.println("Out of range");
-    } else {
-      Serial.print(distance);
-      Serial.println(" cm");
-    }
+    Serial.print(distance);
+     Serial.println(" cm");
 }
 
 double measureDistance() {
