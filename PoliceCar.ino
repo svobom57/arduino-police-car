@@ -5,9 +5,15 @@
 #define ECHO_PIN 12
 #define BLUE_LED 11
 #define RED_LED 10
+#define M_RIGHT_SPEED 3
+#define M_RIGHT_DIR 2
+#define M_LEFT_SPEED 5
+#define M_LEFT_DIR 4
+
+
 
 const long servoInterval = 200;
-long previousServoTime = 0;
+unsigned long previousServoTime = 0;
 bool fullyRotated = false;
 double maxMeasuredDistance = 0;
 int desiredPosition = 0;
@@ -25,11 +31,23 @@ void setup() {
   pinMode(BLUE_LED, OUTPUT);
   pinMode(RED_LED, OUTPUT); 
   servo.attach(9); // Attaching servo to 9 pin
+  pinMode(M_RIGHT_SPEED,OUTPUT);
+  pinMode(M_RIGHT_DIR,OUTPUT);
+  pinMode(M_LEFT_SPEED,OUTPUT);
+  pinMode(M_LEFT_DIR,OUTPUT);
   Serial.begin(9600);
 }
 
 void loop() {
+  goStraight();
   startMultiTasking();
+}
+
+void goStraight() {
+  digitalWrite(M_RIGHT_DIR,HIGH);
+  digitalWrite(M_LEFT_DIR,HIGH);
+  analogWrite(M_RIGHT_SPEED,HIGH);
+  analogWrite(M_LEFT_SPEED,HIGH);
 }
 
 void startMultiTasking() {
