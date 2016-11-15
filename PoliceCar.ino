@@ -1,5 +1,6 @@
 
 #include <Servo.h>
+#include <Moves.h>
 #define TRIG_PIN 13
 #define ECHO_PIN 12
 #define BLUE_LED 11
@@ -78,7 +79,7 @@ void signalizeDistance() {
       digitalWrite(RED_LED,HIGH);
     }
     Serial.print(distance);
-     Serial.println(" cm");
+    Serial.println(" cm");
 }
 
 double measureDistance() {
