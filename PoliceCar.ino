@@ -1,16 +1,7 @@
 
+#include "Config.h"
 #include <Servo.h>
-#include <Moves.h>
-#define TRIG_PIN 13
-#define ECHO_PIN 12
-#define BLUE_LED 11
-#define RED_LED 10
-#define M_RIGHT_SPEED 3
-#define M_RIGHT_DIR 2
-#define M_LEFT_SPEED 5
-#define M_LEFT_DIR 4
-
-
+#include "Moves.h"
 
 const long servoInterval = 200;
 unsigned long previousServoTime = 0;
@@ -39,15 +30,8 @@ void setup() {
 }
 
 void loop() {
-  goStraight();
+  goBackwards(LOW_SPEED);
   startMultiTasking();
-}
-
-void goStraight() {
-  digitalWrite(M_RIGHT_DIR,HIGH);
-  digitalWrite(M_LEFT_DIR,HIGH);
-  analogWrite(M_RIGHT_SPEED,HIGH);
-  analogWrite(M_LEFT_SPEED,HIGH);
 }
 
 void startMultiTasking() {
