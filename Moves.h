@@ -7,7 +7,7 @@ int getSpeedForDirection(bool direction, int speed){
   return speed;
 }
 
-void setMotorsPolatiryForDirection(int direction){
+void setMotorsPolarityForDirection(int direction){
   if(direction){
     digitalWrite(M_RIGHT_DIR, HIGH);
     digitalWrite(M_LEFT_DIR, HIGH);
@@ -20,26 +20,26 @@ void setMotorsPolatiryForDirection(int direction){
 // Moving
 
 void goStraight(int speed) {
-  setMotorsPolatiryForDirection(MOVE_FRONT);
+  setMotorsPolarityForDirection(MOVE_FRONT);
   analogWrite(M_RIGHT_SPEED, getSpeedForDirection(MOVE_FRONT, speed));
   analogWrite(M_LEFT_SPEED, getSpeedForDirection(MOVE_FRONT, speed));
 }
 
 void goBackwards(int speed){
-  setMotorsPolatiryForDirection(MOVE_BACK);
+  setMotorsPolarityForDirection(MOVE_BACK);
   analogWrite(M_RIGHT_SPEED, getSpeedForDirection(MOVE_BACK, speed));
   analogWrite(M_LEFT_SPEED, getSpeedForDirection(MOVE_BACK, speed));
 }
 
 void turnRight(bool direction){
-  setMotorsPolatiryForDirection(direction);
+  setMotorsPolarityForDirection(direction);
   analogWrite(M_RIGHT_SPEED, getSpeedForDirection(direction, LOW_SPEED));
   analogWrite(M_LEFT_SPEED, getSpeedForDirection(direction, MID_SPEED));
   
 }
 
 void turnLeft(bool direction){
-  setMotorsPolatiryForDirection(direction);
+  setMotorsPolarityForDirection(direction);
   analogWrite(M_RIGHT_SPEED, getSpeedForDirection(direction, MID_SPEED));
   analogWrite(M_LEFT_SPEED, getSpeedForDirection(direction, LOW_SPEED));
   
