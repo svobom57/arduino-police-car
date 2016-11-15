@@ -1,8 +1,8 @@
 void goStraight(int speed) {
   digitalWrite(M_RIGHT_DIR, HIGH);
   digitalWrite(M_LEFT_DIR, HIGH);
-  analogWrite(M_RIGHT_SPEED, speed);
-  analogWrite(M_LEFT_SPEED, speed);
+  analogWrite(M_RIGHT_SPEED, (255-speed)*-1);
+  analogWrite(M_LEFT_SPEED, (255-speed)*-1);
 }
 
 void goBackwards(int speed){
