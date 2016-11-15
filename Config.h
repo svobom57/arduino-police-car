@@ -9,3 +9,5 @@
 #define LOW_SPEED 125
 #define MID_SPEED 200
 #define HIGH_SPEED 255
+#define MOVE_FRONT true
+#define MOVE_BACK false

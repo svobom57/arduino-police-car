@@ -30,7 +30,7 @@ void setup() {
 }
 
 void loop() {
-  goBackwards(LOW_SPEED);
+  goStraight(HIGH_SPEED);
   startMultiTasking();
 }
 
