@@ -16,7 +16,6 @@ long duration = 0;
 long distance = 0; 
 
 void setup() {
-  Serial.begin (9600);
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
   pinMode(BLUE_LED, OUTPUT);
