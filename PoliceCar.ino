@@ -18,7 +18,6 @@ long duration = 0;
 long distance = 0; 
 
 void setup() {
-  Serial.begin (9600);
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
   pinMode(BLUE_LED, OUTPUT);
@@ -32,9 +31,6 @@ void setup() {
 }
 
 void loop() {
-//  goStraight(LOW_SPEED);
-//  goBackwards(HIGH_SPEED);
-//  turnRight(MOVE_BACK);
   startMultiTasking();
 }
 
@@ -42,33 +38,40 @@ void startMultiTasking() {
   unsigned long currentTime = millis();
   //Move with servo
   if (currentTime - previousServoTime >= servoInterval) {
-      previousServoTime = currentTime;
-      moveWithServo(); 
-      distance = measureDistance(); 
-      if (distance > maxMeasuredDistance) {
-        maxMeasuredDistance = distance;
-        desiredPosition = servoPosition;
-      }
-      signalizeDistance();
+    previousServoTime = currentTime;
+    scanSurroundings();
   }
   if (currentTime - previousMoveTime >= moveInterval) {
     previousMoveTime = currentTime;
+    moveWithCar();
+  }
+}
+
+void scanSurroundings() {
+  moveWithServo(); 
+  distance = measureDistance(); 
+  if (distance > maxMeasuredDistance) {
+    maxMeasuredDistance = distance;
+    desiredPosition = servoPosition;
+  }
+  signalizeDistance();
+}
+
+void moveWithCar() {
+    if (random(2) == 0) {
+      goStraight(HIGH_SPEED);
+    } else {
+      goBackwards(MID_SPEED);
+    }
+    maxMeasuredDistance = 0;
+}
+
+void printStatus() {
     Serial.print("Max measured distance: ");
     Serial.println(maxMeasuredDistance);
     Serial.print("Desired position: ");
     Serial.println(desiredPosition);
-    if (random(2) == 0) {
-      Serial.print("Going straigth");
-      goStraight(HIGH_SPEED);
-    } else {
-      Serial.print("Going backwards");
-      goBackwards(MID_SPEED);
-    }
-    maxMeasuredDistance = 0;
-  }
 }
-
-
 void moveWithServo() {
   servo.write(servoPosition); 
   if (servoPosition >= 140) {
