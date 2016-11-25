@@ -2,7 +2,7 @@
 
 int getSpeedForDirection(bool direction, int speed){
   if(direction == MOVE_FRONT){
-    return (255-speed)*-1;
+    return (255-speed+1);
   }
   return speed;
 }
