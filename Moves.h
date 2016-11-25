@@ -33,7 +33,7 @@ void goBackwards(int speed){
 
 void turnRight(bool direction){
   setMotorsPolarityForDirection(direction);
-  analogWrite(M_RIGHT_SPEED, getSpeedForDirection(direction, MID_SPEED));
+  analogWrite(M_RIGHT_SPEED, getSpeedForDirection(direction, LOW_SPEED));
   analogWrite(M_LEFT_SPEED, getSpeedForDirection(direction, HIGH_SPEED));
   
 }
@@ -41,7 +41,7 @@ void turnRight(bool direction){
 void turnLeft(bool direction){
   setMotorsPolarityForDirection(direction);
   analogWrite(M_RIGHT_SPEED, getSpeedForDirection(direction, HIGH_SPEED));
-  analogWrite(M_LEFT_SPEED, getSpeedForDirection(direction, MID_SPEED));
+  analogWrite(M_LEFT_SPEED, getSpeedForDirection(direction, LOW_SPEED));
   
 }
 

@@ -3,13 +3,14 @@
 #include <Servo.h>
 #include "Moves.h"
 
-const long servoInterval = 60;
-const long moveInterval = 300;
+const long servoInterval = 40; // 40
+const long moveInterval = 200; // 200
 unsigned long previousServoTime = 0;
 unsigned long previousMoveTime = 0;
 double maxMeasuredDistance = 0;
+double minMeasuredDistance = 100000;
 int desiredPosition = 0;
-int lastMovePosition = -1;
+int undesiredPosition = 0;
 int servoDirection = MOVE_RIGHT;
 
 //Setting up servo
@@ -50,40 +51,47 @@ void startMultiTasking() {
 
 void scanSurroundings() {
   moveWithServo(); 
-  distance = measureDistance(); 
+  distance = measureDistance();
   if (distance > maxMeasuredDistance) {
     maxMeasuredDistance = distance;
     desiredPosition = servoPosition;
   }
+  if (distance < minMeasuredDistance){
+    minMeasuredDistance = distance;
+    undesiredPosition = servoPosition;
+  }
   signalizeDistance();
+  printStatus();
 }
 
 void moveWithCar() {
-  if ((lastMovePosition == -1)|| (abs(lastMovePosition - desiredPosition) <= 30)) {
-    lastMovePosition = desiredPosition;
+  if(minMeasuredDistance >= 60){
+      goStraight(HIGH_SPEED);    
+  }else if(minMeasuredDistance <= 20) {
+    if (undesiredPosition > 70 && undesiredPosition < 110) {
+      goBackwards(MID_SPEED);
+    }
+    if (undesiredPosition <= 70) {
+      turnLeft(MOVE_BACK);
+    } 
+    if (desiredPosition >= 110) {
+      turnRight(MOVE_BACK);
+    }
+  }else{
     if (desiredPosition > 70 && desiredPosition < 110) {
       goStraight(MID_SPEED);
     }
-    
-  } else if ((lastMovePosition == -1)|| (abs(lastMovePosition - desiredPosition) > 30)) {
-    lastMovePosition = desiredPosition;
     if (desiredPosition <= 70) {
-      turnLeft(MOVE_FRONT);
+      turnRight(MOVE_FRONT);
     } 
     if (desiredPosition >= 110) {
-      turnRight(MOVE_FRONT);
+      turnLeft(MOVE_FRONT);
     }
   }
+  minMeasuredDistance = 100000;
   maxMeasuredDistance = 0;
 }
 
-void printStatus() {
-    Serial.print("Max measured distance: ");
-    Serial.println(maxMeasuredDistance);
-    Serial.print("Desired position: ");
-    Serial.println(desiredPosition);
-    Serial.println(abs(lastMovePosition - desiredPosition));
-}
 void moveWithServo() {
   servo.write(servoPosition); 
   if (servoPosition >= 140) {
@@ -117,5 +125,19 @@ double measureDistance() {
     digitalWrite(TRIG_PIN, LOW);
     duration = pulseIn(ECHO_PIN, HIGH);
     return (duration/2) / 29.1; // returns distance
+}
+
+// Debug
+
+void printStatus() {
+    Serial.print("Max measured distance: ");
+    Serial.println(maxMeasuredDistance);
+    Serial.print("Desired position: ");
+    Serial.println(desiredPosition);
+    Serial.print("Min measured distance: ");
+    Serial.println(minMeasuredDistance);
+    Serial.print("Undesired position: ");
+    Serial.println(undesiredPosition);
+    Serial.println("---------------");
 }
 
