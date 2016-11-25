@@ -4,7 +4,7 @@
 #include "Moves.h"
 
 const long servoInterval = 60;
-const long moveInterval = 10000;
+const long moveInterval = 300;
 unsigned long previousServoTime = 0;
 unsigned long previousMoveTime = 0;
 double maxMeasuredDistance = 0;
@@ -100,7 +100,6 @@ void moveWithServo() {
 }
 
 void signalizeDistance() {
-
      if (distance < 50) {  // This is where the BLUE_LED On/Off happens
       digitalWrite(BLUE_LED,HIGH); // When the Red condition is met, the Green BLUE_LED should turn off
       digitalWrite(RED_LED,LOW);
