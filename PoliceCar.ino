@@ -61,7 +61,6 @@ void scanSurroundings() {
     undesiredPosition = servoPosition;
   }
   signalizeDistance();
-  printStatus();
 }
 
 void moveWithCar() {
