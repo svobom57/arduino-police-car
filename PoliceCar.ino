@@ -12,6 +12,7 @@ double minMeasuredDistance = 100000;
 int desiredPosition = 0;
 int undesiredPosition = 0;
 int servoDirection = MOVE_RIGHT;
+double distances[3];
 
 //Setting up servo
 Servo servo;
@@ -51,7 +52,13 @@ void startMultiTasking() {
 
 void scanSurroundings() {
   moveWithServo(); 
-  distance = measureDistance();
+  distances[0] = measureDistance();
+  distances[1] = measureDistance();
+  distances[2] = measureDistance();
+  sort(distances, 3);
+  // Median
+  distance = distances[1];
+ 
   if (distance > maxMeasuredDistance) {
     maxMeasuredDistance = distance;
     desiredPosition = servoPosition;
@@ -126,6 +133,18 @@ double measureDistance() {
     return (duration/2) / 29.1; // returns distance
 }
 
+void sort(double a[], int size) {
+    for(int i=0; i<(size-1); i++) {
+        for(int o=0; o<(size-(i+1)); o++) {
+                if(a[o] > a[o+1]) {
+                    int t = a[o];
+                    a[o] = a[o+1];
+                    a[o+1] = t;
+                }
+        }
+    }
+}
+
 // Debug
 
 void printStatus() {
@@ -139,4 +158,5 @@ void printStatus() {
     Serial.println(undesiredPosition);
     Serial.println("---------------");
 }
+
 
