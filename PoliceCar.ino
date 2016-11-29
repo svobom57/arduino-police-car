@@ -4,7 +4,7 @@
 #include "Moves.h"
 
 const long servoInterval = 40; // 40
-const long moveInterval = 200; // 200
+const long moveInterval = 300;
 unsigned long previousServoTime = 0;
 unsigned long previousMoveTime = 0;
 double maxMeasuredDistance = 0;
@@ -18,7 +18,7 @@ double distances[3];
 Servo servo;
 int servoPosition = 0;
 long duration = 0;
-long distance = 0; 
+int distance = 0; 
 
 void setup() {
   pinMode(TRIG_PIN, OUTPUT);
@@ -58,7 +58,6 @@ void scanSurroundings() {
   sort(distances, 3);
   // Median
   distance = distances[1];
- 
   if (distance > maxMeasuredDistance) {
     maxMeasuredDistance = distance;
     desiredPosition = servoPosition;
@@ -71,19 +70,17 @@ void scanSurroundings() {
 }
 
 void moveWithCar() {
-  if(minMeasuredDistance >= 60){
+  if(minMeasuredDistance >= 45){
       goStraight(HIGH_SPEED);    
-  }else if(minMeasuredDistance <= 20) {
-    if (undesiredPosition > 70 && undesiredPosition < 110) {
-      goBackwards(MID_SPEED);
-    }
-    if (undesiredPosition <= 70) {
+  } else if(minMeasuredDistance <= 20){
+    if (undesiredPosition <= 90) {
       turnLeft(MOVE_BACK);
     } 
-    if (desiredPosition >= 110) {
+    if (desiredPosition >= 91) {
       turnRight(MOVE_BACK);
     }
-  }else{
+  }
+  else{
     if (desiredPosition > 70 && desiredPosition < 110) {
       goStraight(MID_SPEED);
     }
@@ -114,7 +111,7 @@ void moveWithServo() {
 }
 
 void signalizeDistance() {
-     if (distance < 50) {  // This is where the BLUE_LED On/Off happens
+     if (distance < 20) {  // This is where the BLUE_LED On/Off happens
       digitalWrite(BLUE_LED,HIGH); // When the Red condition is met, the Green BLUE_LED should turn off
       digitalWrite(RED_LED,LOW);
     } else {
@@ -148,6 +145,7 @@ void sort(double a[], int size) {
 // Debug
 
 void printStatus() {
+    Serial.println("---------------");
     Serial.print("Max measured distance: ");
     Serial.println(maxMeasuredDistance);
     Serial.print("Desired position: ");
