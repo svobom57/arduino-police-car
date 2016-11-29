@@ -3,20 +3,28 @@
 #include <Servo.h>
 #include "Moves.h"
 
-const long servoInterval = 60;
-const long moveInterval = 10000;
+
+const long servoInterval = 40; // 40
+const long moveInterval = 300;
+
 unsigned long previousServoTime = 0;
 unsigned long previousMoveTime = 0;
 double maxMeasuredDistance = 0;
+double minMeasuredDistance = 100000;
 int desiredPosition = 0;
+
 int lastMovePosition = -1;
+
+int undesiredPosition = 0;
+
 int servoDirection = MOVE_RIGHT;
+double distances[3];
 
 //Setting up servo
 Servo servo;
 int servoPosition = 0;
 long duration = 0;
-long distance = 0; 
+int distance = 0; 
 
 void setup() {
   pinMode(TRIG_PIN, OUTPUT);
@@ -50,23 +58,39 @@ void startMultiTasking() {
 
 void scanSurroundings() {
   moveWithServo(); 
-  distance = measureDistance(); 
+  distances[0] = measureDistance();
+  distances[1] = measureDistance();
+  distances[2] = measureDistance();
+  sort(distances, 3);
+  // Median
+  distance = distances[1];
   if (distance > maxMeasuredDistance) {
     maxMeasuredDistance = distance;
     desiredPosition = servoPosition;
+  }
+  if (distance < minMeasuredDistance){
+    minMeasuredDistance = distance;
+    undesiredPosition = servoPosition;
   }
   signalizeDistance();
 }
 
 void moveWithCar() {
-  if ((lastMovePosition == -1)|| (abs(lastMovePosition - desiredPosition) <= 30)) {
-    lastMovePosition = desiredPosition;
+  if(minMeasuredDistance >= 45){
+      goStraight(HIGH_SPEED);    
+  } else if(minMeasuredDistance <= 20){
+    if (undesiredPosition <= 90) {
+      turnLeft(MOVE_BACK);
+    } 
+    if (desiredPosition >= 91) {
+      turnRight(MOVE_BACK);
+    }
+  }
+  else{
     if (desiredPosition > 70 && desiredPosition < 110) {
       goStraight(MID_SPEED);
     }
-    
-  } else if ((lastMovePosition == -1)|| (abs(lastMovePosition - desiredPosition) > 30)) {
-    lastMovePosition = desiredPosition;
+
     if (desiredPosition <= 70) {
       turnLeft(MOVE_FRONT);
     } 
@@ -74,6 +98,8 @@ void moveWithCar() {
       turnRight(MOVE_FRONT);
     }
   }
+ minMeasuredDistance = 100000;
+  maxMeasuredDistance = 0;
   maxMeasuredDistance = 0;
 }
 
@@ -83,7 +109,9 @@ void printStatus() {
     Serial.print("Desired position: ");
     Serial.println(desiredPosition);
     Serial.println(abs(lastMovePosition - desiredPosition));
+
 }
+
 void moveWithServo() {
   servo.write(servoPosition); 
   if (servoPosition >= 140) {
@@ -100,7 +128,6 @@ void moveWithServo() {
 }
 
 void signalizeDistance() {
-
      if (distance < 20) {  // This is where the BLUE_LED On/Off happens
       digitalWrite(BLUE_LED,HIGH); // When the Red condition is met, the Green BLUE_LED should turn off
       digitalWrite(RED_LED,LOW);
@@ -119,4 +146,32 @@ double measureDistance() {
     duration = pulseIn(ECHO_PIN, HIGH);
     return (duration/2) / 29.1; // returns distance
 }
+
+void sort(double a[], int size) {
+    for(int i=0; i<(size-1); i++) {
+        for(int o=0; o<(size-(i+1)); o++) {
+                if(a[o] > a[o+1]) {
+                    int t = a[o];
+                    a[o] = a[o+1];
+                    a[o+1] = t;
+                }
+        }
+    }
+}
+
+// Debug
+
+void printStatus() {
+    Serial.println("---------------");
+    Serial.print("Max measured distance: ");
+    Serial.println(maxMeasuredDistance);
+    Serial.print("Desired position: ");
+    Serial.println(desiredPosition);
+    Serial.print("Min measured distance: ");
+    Serial.println(minMeasuredDistance);
+    Serial.print("Undesired position: ");
+    Serial.println(undesiredPosition);
+    Serial.println("---------------");
+}
+
 
