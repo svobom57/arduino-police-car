@@ -85,10 +85,10 @@ void moveWithCar() {
       goStraight(MID_SPEED);
     }
     if (desiredPosition <= 70) {
-      turnRight(MOVE_FRONT);
+      turnLeft(MOVE_FRONT);
     } 
     if (desiredPosition >= 110) {
-      turnLeft(MOVE_FRONT);
+      turnRight(MOVE_FRONT);
     }
   }
   minMeasuredDistance = 100000;
