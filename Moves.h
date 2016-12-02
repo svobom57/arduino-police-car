@@ -3,12 +3,14 @@
 #define M_LEFT_SPEED 5
 #define M_LEFT_DIR 4
 #define LOW_SPEED 125
-#define MID_SPEED 200
-#define HIGH_SPEED 255
+#define MID_SPEED 130
+#define HIGH_SPEED 150
 #define MOVE_FRONT true
 #define MOVE_BACK false
 #define MOVE_LEFT true
 #define MOVE_RIGHT false
+#define IS_MOVING_LEFT 0
+#define IS_MOVING_RIGHT 1
 
 // Support
 
@@ -34,26 +36,25 @@ void setMotorsPolarityForDirection(int direction){
 void goStraight(int speed) {
   setMotorsPolarityForDirection(MOVE_FRONT);
   analogWrite(M_RIGHT_SPEED, getSpeedForDirection(MOVE_FRONT, speed));
-  analogWrite(M_LEFT_SPEED, getSpeedForDirection(MOVE_FRONT, speed));
+  analogWrite(M_LEFT_SPEED, getSpeedForDirection(MOVE_FRONT, speed*1.5));
 }
 
 void goBackwards(int speed){
   setMotorsPolarityForDirection(MOVE_BACK);
   analogWrite(M_RIGHT_SPEED, getSpeedForDirection(MOVE_BACK, speed));
-  analogWrite(M_LEFT_SPEED, getSpeedForDirection(MOVE_BACK, speed));
+  analogWrite(M_LEFT_SPEED, getSpeedForDirection(MOVE_BACK, speed*1.5));
 }
 
 void turnRight(bool direction){
   setMotorsPolarityForDirection(direction);
-  analogWrite(M_RIGHT_SPEED, getSpeedForDirection(direction, MID_SPEED));
-  analogWrite(M_LEFT_SPEED, getSpeedForDirection(direction, HIGH_SPEED));
-  
+  analogWrite(M_RIGHT_SPEED, 0);
+  analogWrite(M_LEFT_SPEED, 255);    
 }
 
 void turnLeft(bool direction){
   setMotorsPolarityForDirection(direction);
-  analogWrite(M_RIGHT_SPEED, getSpeedForDirection(direction, HIGH_SPEED));
-  analogWrite(M_LEFT_SPEED, getSpeedForDirection(direction, MID_SPEED));  
+  analogWrite(M_RIGHT_SPEED, 255);
+  analogWrite(M_LEFT_SPEED, 0);  
 }
 
 

@@ -20,6 +20,9 @@ int undesiredPosition = 0;
 int servoDirection = MOVE_RIGHT;
 double distances[3];
 
+int backwardDirection = -1;
+int forwardDirection = -1;
+
 //Setting up servo
 Servo servo;
 int servoPosition = 0;
@@ -45,7 +48,8 @@ void loop() {
 
 void startMultiTasking() {
   unsigned long currentTime = millis();
-  //Move with servo
+//  Move with servo
+//turnRight(MOVE_FRONT);
   if (currentTime - previousServoTime >= servoInterval) {
     previousServoTime = currentTime;
     scanSurroundings();
@@ -75,41 +79,58 @@ void scanSurroundings() {
   signalizeDistance();
 }
 
+
 void moveWithCar() {
-  if(minMeasuredDistance >= 45){
+//  printStatus();
+  if(minMeasuredDistance >= 30){
       goStraight(HIGH_SPEED);    
-  } else if(minMeasuredDistance <= 20){
+      backwardDirection = -1;
+      forwardDirection = -1;
+  } else if(minMeasuredDistance <= 15){
     if (undesiredPosition <= 90) {
-      turnLeft(MOVE_BACK);
+      if ((backwardDirection == IS_MOVING_LEFT) || (backwardDirection == -1)) {
+        turnLeft(MOVE_BACK); 
+      }
+      backwardDirection = IS_MOVING_LEFT;
     } 
     if (desiredPosition >= 91) {
-      turnRight(MOVE_BACK);
+      if ((backwardDirection == IS_MOVING_RIGHT) || (backwardDirection == -1 )) {
+        turnRight(MOVE_BACK); 
+      }
+     backwardDirection == IS_MOVING_RIGHT; 
     }
+  } else {
+//    Serial.println(desiredPosition);
+    if (desiredPosition >= 60  && desiredPosition < 100) {
+      if (forwardDirection == IS_MOVING_LEFT) {
+            turnLeft(MOVE_FRONT); 
+//            Serial.println("Turn left");
+      } else if ((forwardDirection == IS_MOVING_RIGHT) || (forwardDirection == -1 )) {
+          turnRight(MOVE_FRONT);
+//          Serial.println("Turn right");
+       } else {
+          goStraight(MID_SPEED);
+       }
+       goStraight(MID_SPEED);
+    } else if (desiredPosition <= 59) {
+        if ((forwardDirection == IS_MOVING_LEFT) || (forwardDirection == -1 )) {
+              turnLeft(MOVE_FRONT); 
+//              Serial.println("Turn left");
+        }
+        forwardDirection == IS_MOVING_LEFT;
+        backwardDirection = -1;
+      } else if (desiredPosition >= 101) {
+          if ((forwardDirection == IS_MOVING_RIGHT) || (forwardDirection == -1 )) {
+          turnRight(MOVE_FRONT);
+//          Serial.println("Turn right");
+         }
+        forwardDirection == IS_MOVING_RIGHT;
+        backwardDirection = -1;
+      }
   }
-  else{
-    if (desiredPosition > 70 && desiredPosition < 110) {
-      goStraight(MID_SPEED);
-    }
-
-    if (desiredPosition <= 70) {
-      turnLeft(MOVE_FRONT);
-    } 
-    if (desiredPosition >= 110) {
-      turnRight(MOVE_FRONT);
-    }
-  }
- minMeasuredDistance = 100000;
+  minMeasuredDistance = 100000;
   maxMeasuredDistance = 0;
   maxMeasuredDistance = 0;
-}
-
-void printStatus() {
-    Serial.print("Max measured distance: ");
-    Serial.println(maxMeasuredDistance);
-    Serial.print("Desired position: ");
-    Serial.println(desiredPosition);
-    Serial.println(abs(lastMovePosition - desiredPosition));
-
 }
 
 void moveWithServo() {
@@ -128,7 +149,7 @@ void moveWithServo() {
 }
 
 void signalizeDistance() {
-     if (distance < 20) {  // This is where the BLUE_LED On/Off happens
+     if (distance < 15) {  // This is where the BLUE_LED On/Off happens
       digitalWrite(BLUE_LED,HIGH); // When the Red condition is met, the Green BLUE_LED should turn off
       digitalWrite(RED_LED,LOW);
     } else {
