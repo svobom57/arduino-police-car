@@ -36,6 +36,7 @@ void setup() {
   pinMode(ECHO_PIN, INPUT);
   pinMode(BLUE_LED, OUTPUT);
   pinMode(RED_LED, OUTPUT); 
+  pinMode(GREEN_LED, OUTPUT); 
   servo.attach(9); // Attaching servo to 9 pin
   pinMode(M_RIGHT_SPEED,OUTPUT);
   pinMode(M_RIGHT_DIR,OUTPUT);
@@ -48,8 +49,10 @@ void setup() {
 void loop() {
   setBtnState();
   if (isVigilant) {
+    digitalWrite(GREEN_LED, HIGH);
     startVigilantMultitasking();
   } else {
+    digitalWrite(GREEN_LED, LOW);
    startMultiTasking(); 
   }
 }
@@ -68,12 +71,14 @@ void startVigilantMultitasking() {
 
 void reactToWorld() {
   if (minMeasuredDistance < 20) {
-    if (undesiredPosition > 90) {
-      turnRight(MOVE_BACK);
+      if (undesiredPosition > 40 && undesiredPosition < 110) {
+        goBackwards(HIGH_SPEED);
+      } else if (undesiredPosition <= 40) {
+        turnRight(MOVE_BACK);
+      } else if (undesiredPosition >= 100) {
+       turnLeft(MOVE_BACK); 
+       }
     } else {
-      turnLeft(MOVE_BACK);
-    }
-  } else {
     stop();
   }
   resetMeasurements();
@@ -116,6 +121,7 @@ void setBtnState() {
   buttonState = digitalRead(BTN_PIN);
   if (buttonState == 1) {
     isVigilant = !isVigilant;
+    stop();
     delay(1000);
     Serial.println(isVigilant);
   }
@@ -196,7 +202,7 @@ void moveWithServo() {
 
 void signalizeDistance() {
      if (distance < 15) {  // This is where the BLUE_LED On/Off happens
-      digitalWrite(BLUE_LED,HIGH); // When the Red condition is met, the Green BLUE_LED should turn off
+      digitalWrite(BLUE_LED,HIGH); 
       digitalWrite(RED_LED,LOW);
     } else {
       digitalWrite(BLUE_LED,LOW);
@@ -205,10 +211,10 @@ void signalizeDistance() {
 }
 
 double measureDistance() {
-    digitalWrite(TRIG_PIN, LOW);  // Added this line
-    delayMicroseconds(2); // Added this line
+    digitalWrite(TRIG_PIN, LOW); 
+    delayMicroseconds(2); 
     digitalWrite(TRIG_PIN, HIGH);
-    delayMicroseconds(10); // Added this line
+    delayMicroseconds(10);
     digitalWrite(TRIG_PIN, LOW);
     duration = pulseIn(ECHO_PIN, HIGH);
     return (duration/2) / 29.1; // returns distance

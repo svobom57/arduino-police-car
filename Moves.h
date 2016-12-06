@@ -58,6 +58,7 @@ void turnLeft(bool direction){
 }
 
 void stop() {
+  setMotorsPolarityForDirection(MOVE_BACK);
   analogWrite(M_RIGHT_SPEED, 0);
   analogWrite(M_LEFT_SPEED, 0);   
 }
