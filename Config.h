@@ -2,3 +2,5 @@
 #define ECHO_PIN 12
 #define BLUE_LED 11
 #define RED_LED 10
+#define BTN_PIN 6 
+

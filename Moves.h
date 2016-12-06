@@ -57,4 +57,8 @@ void turnLeft(bool direction){
   analogWrite(M_LEFT_SPEED, 0);  
 }
 
+void stop() {
+  analogWrite(M_RIGHT_SPEED, 0);
+  analogWrite(M_LEFT_SPEED, 0);   
+}
 

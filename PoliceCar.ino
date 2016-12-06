@@ -28,7 +28,9 @@ Servo servo;
 int servoPosition = 0;
 long duration = 0;
 int distance = 0; 
-
+//Setting up btn 
+int buttonState = 0;
+bool isVigilant = true;
 void setup() {
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
@@ -39,17 +41,48 @@ void setup() {
   pinMode(M_RIGHT_DIR,OUTPUT);
   pinMode(M_LEFT_SPEED,OUTPUT);
   pinMode(M_LEFT_DIR,OUTPUT);
+  pinMode(BTN_PIN, INPUT);
   Serial.begin(9600);
 }
 
 void loop() {
-  startMultiTasking();
+  setBtnState();
+  if (isVigilant) {
+    startVigilantMultitasking();
+  } else {
+   startMultiTasking(); 
+  }
 }
+
+void startVigilantMultitasking() {
+  unsigned long currentTime = millis();
+  if (currentTime - previousServoTime >= servoInterval) {
+    previousServoTime = currentTime;
+    scanSurroundings();
+  }
+  if (currentTime - previousMoveTime >= moveInterval) {
+    previousMoveTime = currentTime;
+    reactToWorld();
+  }
+}
+
+void reactToWorld() {
+  if (minMeasuredDistance < 20) {
+    if (undesiredPosition > 90) {
+      turnRight(MOVE_BACK);
+    } else {
+      turnLeft(MOVE_BACK);
+    }
+  } else {
+    stop();
+  }
+  resetMeasurements();
+}
+
 
 void startMultiTasking() {
   unsigned long currentTime = millis();
 //  Move with servo
-//turnRight(MOVE_FRONT);
   if (currentTime - previousServoTime >= servoInterval) {
     previousServoTime = currentTime;
     scanSurroundings();
@@ -79,6 +112,15 @@ void scanSurroundings() {
   signalizeDistance();
 }
 
+void setBtnState() {
+  buttonState = digitalRead(BTN_PIN);
+  if (buttonState == 1) {
+    isVigilant = !isVigilant;
+    delay(1000);
+    Serial.println(isVigilant);
+  }
+  
+}
 
 void moveWithCar() {
 //  printStatus();
@@ -128,6 +170,10 @@ void moveWithCar() {
         backwardDirection = -1;
       }
   }
+  resetMeasurements();
+}
+
+void resetMeasurements() {
   minMeasuredDistance = 100000;
   maxMeasuredDistance = 0;
   maxMeasuredDistance = 0;
