@@ -1,6 +1,12 @@
 # arduino-police-car
 Arduino sketch made as a school project for programming in Arduino. This library is controlling Arduino robotic car.
 
+Here's what it looks like:
+
+![police_car](police_car.JPG)
+
+Here are the schematics:
+
 ![fritzing](arduino-police-car.png)
 
 Unfortunately the schematics for car have different H-bridge, than we used in this project. The correct one should be: `L9110` but I did not found Fritzing part for this particular one.
