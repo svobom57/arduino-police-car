@@ -104,9 +104,9 @@ void moveWithServo() {
     servoDirection = MOVE_RIGHT;
   }
   if (servoDirection == MOVE_LEFT) {
-    servoPosition -= 10;
+    servoPosition -= 20;
   } else {
-    servoPosition += 10;
+    servoPosition += 20;
   }
 }
 
